@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
 import Swal from "sweetalert2";
 
@@ -7,10 +7,12 @@ function ImageConvert() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
   const [processedImage, setProcessedImage] = useState(null);
+  const [latestImage, setLatestImage] = useState(null);
   const [imageDetails, setImageDetails] = useState({
     original: null,
     processed: null,
   });
+
   const [compressionDetails, setCompressionDetails] = useState({
     originalSize: null,
     processedSize: null,
@@ -59,13 +61,28 @@ function ImageConvert() {
     reader.readAsDataURL(file);
   };
 
+  useEffect(() => {
+    fetchLatestImage();
+  }, []);
+
+  const fetchLatestImage = () => {
+    axios
+      .get("http://localhost:5000/images/api/images/latest")
+      .then((response) => {
+        setLatestImage(response.data.processedImageUrl);
+      })
+      .catch((error) => {
+        console.error("Error fetching latest image:", error);
+      });
+  };
+
   const handleUpload = () => {
     if (selectedFile) {
       const formData = new FormData();
       formData.append("image", selectedFile);
 
       axios
-        .post("https://server-process.vercel.app/img/upload", formData)
+        .post("https://server-process.vercel.app/images/img/upload", formData)
         .then((response) => {
           console.log("Image uploaded successfully");
           console.log("Processed image URL:", response.data.processedImageUrl);
@@ -103,7 +120,7 @@ function ImageConvert() {
     if (processedImage) {
       const imageId = processedImage.split("/").pop();
       axios
-        .get(`https://server-process.vercel.app/api/download/${imageId}`, {
+        .get(`https://server-process.vercel.app/images/api/images/latest`, {
           responseType: "blob",
         })
         .then((response) => {
