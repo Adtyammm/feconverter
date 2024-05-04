@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   Card,
@@ -8,18 +8,17 @@ import {
   Form,
   Row,
   Spinner,
+  Table,
 } from "react-bootstrap";
 import Swal from "sweetalert2";
 
 function AudioConvert() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [format, setFormat] = useState("");
-  const [convertedFile, setConvertedFile] = useState("");
   const [uploadedFileDetails, setUploadedFileDetails] = useState(null);
-  const [convertedFileDetails, setConvertedFileDetails] = useState(null);
   const [uploadedFileUrl, setUploadedFileUrl] = useState(null);
-  const [convertedFileUrl, setConvertedFileUrl] = useState(null);
-  const [loading, setLoading] = useState(false); // State untuk status loading
+  const [loading, setLoading] = useState(false);
+  const [audioData, setAudioData] = useState([]);
 
   const handleFileChange = (event) => {
     setSelectedFile(event.target.files[0]);
@@ -58,10 +57,9 @@ function AudioConvert() {
     setLoading(true);
 
     axios
-      .post("http://localhost:5000/upload", formData)
+      .post("http://localhost:5000/convert/upload", formData)
       .then((response) => {
         const { filename } = response.data;
-        setUploadedFileUrl(`/uploads_convert_audio/${filename}`);
         Swal.fire("Success", "Berhail Upload Audio!", "success");
       })
       .catch((error) => {
@@ -73,49 +71,23 @@ function AudioConvert() {
       });
   };
 
-  const handleConvert = () => {
-    const formData = new FormData();
-    formData.append("audio", selectedFile);
-    formData.append("format", format);
+  useEffect(() => {
+    fetchAudioData();
+  }, []);
 
+  const fetchAudioData = () => {
     setLoading(true);
-
     axios
-      .post("http://localhost:5000/convert", formData)
+      .get("http://localhost:5000/convert/getdual")
       .then((response) => {
-        const { convertedFileDetails } = response.data;
-        const { name } = convertedFileDetails;
-        setConvertedFileDetails(convertedFileDetails);
-        setConvertedFileUrl(`/uploads_convert_audio/${name}`);
-        setConvertedFile(convertedFileDetails.name);
-        Swal.fire("Success", "Berhasil Konversi Audio", "success");
+        setAudioData(response.data);
       })
       .catch((error) => {
         console.error(error);
-        Swal.fire("Error", "Gagal Konversi Audio", "error");
+        Swal.fire("Error", "Gagal mendapatkan data audio.", "error");
       })
       .finally(() => {
         setLoading(false);
-      });
-  };
-
-  const handleDownload = (filename) => {
-    axios
-      .get(`http://localhost:5000/download/${filename}`, {
-        responseType: "blob",
-      })
-      .then((response) => {
-        const downloadUrl = window.URL.createObjectURL(
-          new Blob([response.data])
-        );
-        const a = document.createElement("a");
-        a.href = downloadUrl;
-        a.download = filename;
-        a.click();
-      })
-      .catch((error) => {
-        console.error(error);
-        Swal.fire("Error", "Gagal Download Audio.", "error");
       });
   };
 
@@ -133,7 +105,7 @@ function AudioConvert() {
                 <Form.Group>
                   <Form.Control type="file" onChange={handleFileChange} />
                 </Form.Group>
-                {uploadedFileUrl && (
+                {/* {uploadedFileUrl && (
                   <div className="mt-4">
                     <h3>Play Audio</h3>
                     <audio controls>
@@ -141,7 +113,7 @@ function AudioConvert() {
                       Your browser does not support the audio element.
                     </audio>
                   </div>
-                )}
+                )} */}
 
                 {uploadedFileDetails && (
                   <div className="mt-4">
@@ -168,63 +140,50 @@ function AudioConvert() {
             </Card.Body>
           </Card>
         </Col>
+      </Row>
 
+      <Row className="justify-content-center mt-5">
         <Col>
           <Card>
             <Card.Body>
-              <Card.Title>Konversi Audio</Card.Title>
-              <Form>
-                <Form.Group>
-                  <Form.Control
-                    as="select"
-                    value={format}
-                    onChange={handleFormatChange}
-                  >
-                    <option value="">Pilih Format</option>
-                    <option value="mp3">MP3</option>
-                    <option value="wav">WAV</option>
-                    {/* Add more format options here */}
-                  </Form.Control>
-                </Form.Group>
-                <Button
-                  variant="primary"
-                  onClick={handleConvert}
-                  disabled={!selectedFile || !format}
-                  style={{ marginTop: "10px", fontWeight:"bold" }}
-                >
-                  {loading ? (
-                    <>
-                      <Spinner animation="border" size="sm" /> Converting...
-                    </>
-                  ) : (
-                    "Konversi"
-                  )}
-                </Button>
-              </Form>
+              <Card.Title>Daftar Audio</Card.Title>
 
-              {convertedFileUrl && (
-                <div className="mt-4">
-                  <h3>Play Audio</h3>
-                  <audio controls>
-                    <source src={convertedFileUrl} type="audio/mpeg" />
-                    Your browser does not support the audio element.
-                  </audio>
-                </div>
-              )}
-              {convertedFile && convertedFileDetails && (
-                <div className="mt-4">
-                  <h3>Detail Konversi</h3>
-                  <p>Nama : {convertedFile}</p>
-                  <p>Type : {convertedFileDetails.type}</p>
-                  <p>Ukuran File : {formatSize(convertedFileDetails.size)}</p>
-                  {/* <p>Konversi File: {convertedFile}</p> */}
-                  <Button
-                    variant="primary"
-                    onClick={() => handleDownload(convertedFile)}
-                  >
-                    Download Audio
-                  </Button>
-                </div>
+              {loading ? (
+                <Spinner animation="border" role="status">
+                  <span className="visually-hidden">Loading...</span>
+                </Spinner>
+              ) : (
+                <Table striped bordered hover>
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Nama</th>
+                      <th>Tipe</th>
+                      <th>Ukuran</th>
+                      <th>PLay</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {audioData.map((audio, index) => (
+                      <tr key={audio.id}>
+                        <td>{index + 1}</td>
+                        <td>{audio.originalname}</td>
+                        <td>{audio.mimetype}</td>
+                        <td>{audio.size}</td>
+                        <td>
+                          {" "}
+                          <audio controls>
+                            <source
+                              src={`data:audio/mpeg;base64,${audio.audioData}`}
+                              type="audio/mpeg"
+                            />
+                            Your browser does not support the audio element.
+                          </audio>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
               )}
             </Card.Body>
           </Card>

@@ -67,7 +67,7 @@ function ImageConvert() {
 
   const fetchLatestImage = () => {
     axios
-      .get("http://localhost:5000/images/api/images/latest")
+      .get("http://localhost:5000/images/latest-img")
       .then((response) => {
         setLatestImage(response.data.processedImageUrl);
       })
@@ -82,7 +82,7 @@ function ImageConvert() {
       formData.append("image", selectedFile);
 
       axios
-        .post("https://server-process.vercel.app/images/img/upload", formData)
+        .post("http://localhost:5000/images/img/upload", formData)
         .then((response) => {
           console.log("Image uploaded successfully");
           console.log("Processed image URL:", response.data.processedImageUrl);
@@ -120,7 +120,7 @@ function ImageConvert() {
     if (processedImage) {
       const imageId = processedImage.split("/").pop();
       axios
-        .get(`https://server-process.vercel.app/images/api/images/latest`, {
+        .get(`http://localhost:5000/images/latest-img`, {
           responseType: "blob",
         })
         .then((response) => {
