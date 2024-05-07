@@ -473,5 +473,3 @@ export function Merged() {
     </Row>
   );
 }
-
-

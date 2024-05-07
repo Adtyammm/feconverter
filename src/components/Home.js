@@ -2,9 +2,9 @@ import React from "react";
 import { Container, Row, Nav, Col } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import Carousel from "react-bootstrap/Carousel";
-import backgroundsatu from "../assets/backgroundsatu.jpg";
-import backgrounddua from "../assets/backgrounddua.jpg";
-import backgroundtiga from "../assets/backgroundtiga.jpg";
+import backgroundsatu from "../assets/backgroundsatu.png";
+import backgrounddua from "../assets/backgrounddua.png";
+import backgroundtiga from "../assets/backgroundtiga.png";
 
 function Home() {
   return (
@@ -12,8 +12,8 @@ function Home() {
       <Row>
         <Col xs={12} md={4} className="text-center mt-5 my-auto">
           <h5>Praktikum Sistem Multimedia</h5>
-          <h5>Arba Adhy Pamungkas</h5>
-          <h5>1207050016</h5>
+          <h5>Aditya Muhamad Maulana</h5>
+          <h5>1207050002</h5>
         </Col>
         <Col xs={12} md={8}>
           <Carousel

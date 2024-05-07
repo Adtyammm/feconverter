@@ -57,7 +57,7 @@ function AudioConvert() {
     setLoading(true);
 
     axios
-      .post("http://localhost:5000/convert/upload", formData)
+      .post("https://beconverter.vercel.app/convert/upload", formData)
       .then((response) => {
         const { filename } = response.data;
         Swal.fire("Success", "Berhail Upload Audio!", "success");
@@ -78,7 +78,7 @@ function AudioConvert() {
   const fetchAudioData = () => {
     setLoading(true);
     axios
-      .get("http://localhost:5000/convert/getdual")
+      .get("https://beconverter.vercel.app/convert/getdual")
       .then((response) => {
         setAudioData(response.data);
       })
