@@ -58,7 +58,7 @@ export function TestAudio() {
 
     try {
       const uploadResponse = await axios.post(
-        "https://beconverter.vercel.app/merge/upload",
+        "http://localhost:5000/merge/upload",
         formData,
         {
           headers: {
@@ -101,7 +101,7 @@ export function TestAudio() {
       setIsLoading(true);
 
       const mergeResponse = await axios.post(
-        "https://beconverter.vercel.app/merge/merge",
+        "http://localhost:5000/merge/merge",
         { id: uploadResponse._id }
       );
       console.log("Merged audio:", mergeResponse.data);
@@ -133,7 +133,7 @@ export function TestAudio() {
       setIsLoading(true);
 
       const mergeWithBacksoundResponse = await axios.post(
-        "https://beconverter.vercel.app/merge/mergewithbacksound",
+        "http://localhost:5000/merge/mergewithbacksound",
         { id: uploadResponse._id }
       );
       console.log(
@@ -225,9 +225,7 @@ export function DataTabel() {
   useEffect(() => {
     const fetchAudioData = async () => {
       try {
-        const response = await axios.get(
-          "https://beconverter.vercel.app/merge/getdual"
-        );
+        const response = await axios.get("http://localhost:5000/merge/getdual");
         setAudioData(response.data);
       } catch (error) {
         console.error("Error fetching audio data:", error);
@@ -316,9 +314,7 @@ export function Merged() {
   useEffect(() => {
     const fetchAudioData = async () => {
       try {
-        const response = await axios.get(
-          "https://beconverter.vercel.app/merge/getdual"
-        );
+        const response = await axios.get("http://localhost:5000/merge/getdual");
         setAudioData(response.data);
       } catch (error) {
         console.error("Error fetching audio data:", error);
@@ -332,7 +328,7 @@ export function Merged() {
     try {
       setIsLoading(true);
 
-      await axios.post(`https://beconverter.vercel.app/merge/merge`, { id });
+      await axios.post(`http://localhost:5000/merge/merge`, { id });
       console.log(`Merge audio with ID ${id} request sent`);
       setIsLoading(false);
       Swal.fire({
@@ -354,12 +350,9 @@ export function Merged() {
   const handleMergeWithBacksound = async (id) => {
     try {
       setIsLoading(true);
-      await axios.post(
-        `https://beconverter.vercel.app/merge/mergewithbacksound`,
-        {
-          id,
-        }
-      );
+      await axios.post(`http://localhost:5000/merge/mergewithbacksound`, {
+        id,
+      });
       console.log(`Merge audio with backsound with ID ${id} request sent`);
       setIsLoading(false);
       Swal.fire({
