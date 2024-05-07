@@ -133,7 +133,7 @@ export function TestAudio() {
       setIsLoading(true);
 
       const mergeWithBacksoundResponse = await axios.post(
-        "https://beconverter.vercel.app//merge/mergewithbacksound",
+        "https://beconverter.vercel.app/merge/mergewithbacksound",
         { id: uploadResponse._id }
       );
       console.log(
@@ -317,7 +317,7 @@ export function Merged() {
     const fetchAudioData = async () => {
       try {
         const response = await axios.get(
-          "https://beconverter.vercel.app//merge/getdual"
+          "https://beconverter.vercel.app/merge/getdual"
         );
         setAudioData(response.data);
       } catch (error) {
